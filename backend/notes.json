@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "note": "My new Note",
+    "author": "Max Mustermann",
+    "date": "2025-01-15"
+  },
+  {
+    "id": 2,
+    "note": "Dies ist ein Test",
+    "author": "Steph",
+    "date": "2025-01-20T12:56:40.014Z"
+  }
+]

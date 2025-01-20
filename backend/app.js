@@ -1,7 +1,10 @@
 const express = require("express");
 const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
 const app = express();
 const port = process.env.NOTES_API_PORT || 8080;
+const NOTES_FILE_PATH = path.join(__dirname, "notes.json");
 
 // Middleware json-Format
 app.use(express.json());
@@ -21,9 +24,20 @@ let notes = [
   },
 ];
 
-app.listen(port, () => {
-  console.log(`server running on http://localhost:${port}`);
-});
+try {
+  if (fs.existsSync(NOTES_FILE_PATH)){
+    const data = fs.readFileSync(NOTES_FILE_PATH, "utf-8");
+     notes = JSON.parse(data);
+  } else {
+    console.log("File does not exist")
+  }
+} catch (error) {
+  console.log("note file does not exist", error);
+};
+
+function saveNotes() {
+  fs.writeFileSync(NOTES_FILE_PATH, JSON.stringify(notes, null, 2), "utf-8");
+}
 
 app.get("/", (request, response) => {
   response.send("Hello World");
@@ -52,6 +66,7 @@ app.post("/notes", (request, response) => {
     date: new Date(),
   };
   notes.push(newNote);
+  saveNotes();
   response.json(notes);
 });
 
@@ -62,6 +77,7 @@ app.put("/notes/:id", (request, response) => {
     note.note = request.body.note;
     note.author = request.body.author;
     note.date = request.body.date;
+    saveNotes();
     response.json(notes);
   } else {
     response.status(404).json({ message: `Note with id ${id} not found` });
@@ -72,11 +88,16 @@ app.delete("/notes/:id", (request, response) => {
   const id = parseInt(request.params.id);
   notes = notes.filter((note) => note.id !== id);
   // notes.forEach((note) => {
-  //     let newId = parseInt(note.id);
-  //     if (id < newId) {
-  //         newId = newId - 1;
-  //         note.id = newId;
-  //     };
-  // });
-  response.json(notes);
-});
+    //     let newId = parseInt(note.id);
+    //     if (id < newId) {
+      //         newId = newId - 1;
+      //         note.id = newId;
+      //     };
+      // });
+      saveNotes();
+      response.json(notes);
+    });
+    
+    app.listen(port, () => {
+    console.log(`server running on http://localhost:${port}`);
+    });
