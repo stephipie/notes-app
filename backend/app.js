@@ -26,12 +26,12 @@ let notes = [
 const db = new database("notes.db", { verbose: console.log });
 
 // create a table if not exist
-db.exec(`
-  CREATE TABLE IF NOT EXISTS notes (
-  id INTEGER PRIMERY KEY AUTOINCREMENT, 
+db.exec(`CREATE TABLE IF NOT EXISTS notes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   note TEXT,
   author TEXT,
-  date TEXT)
+  date TEXT
+  )
   `);
 
   
@@ -42,7 +42,7 @@ db.exec(`
   // get all notes
   app.get("/notes", (request, response) => {
     // SELECT * FROM todos;
-    const rows = db.prepare("SELECT * FROM todos").all();
+    const rows = db.prepare("SELECT * FROM notes").all();
     response.json(rows);
   });
   
@@ -69,10 +69,10 @@ db.exec(`
     // INSERT INTO notes (note, author, date) VALUES (?, ?, ?);
     const { note, author, date } = request.body;
     const insert = db.prepare("INSERT INTO notes (note, author, date) VALUES (?, ?, ?)");
-    insert.run(text, text, text);
+    insert.run(note, author, date);
 
     const newNote = db
-    .prepare("SELECT * FROM todos ORDER BY id DESC LIMIT 1")
+    .prepare("SELECT * FROM notes ORDER BY id DESC LIMIT 1")
     .get();
     response.json(newNote);
     // const lastId = notes.length > 0 ? notes[notes.length - 1].id : 0;
@@ -90,7 +90,8 @@ db.exec(`
   app.put("/notes/:id", (request, response) => {
     // UPDATE notes SET note = ?, author = ?, date = ? WHERE id = ?;
     const id = parseInt(request.params.id);
-    const { text, text, text } = request.body;
+    const { note, author, date } = request.body;
+  
     
     const exist = db.prepare("SELECT * FROM notes WHERE id = ?").get(id);
     if (!exist) {
@@ -104,8 +105,8 @@ db.exec(`
       id
     );
 
-    const note = db.prepare("SELECT * FROM notes WHERE id = ?").get(id);
-    response.json(note);
+    const updatedNote = db.prepare("SELECT * FROM notes WHERE id = ?").get(id);
+    response.json(updatedNote);
     // const note = notes.find((note) => note.id === id);
     // if (note) {
     //   note.note = request.body.note;
