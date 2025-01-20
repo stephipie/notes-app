@@ -111,7 +111,7 @@ const addNote = async (note) => {
     body: JSON.stringify(note)
   })
   const notes = await response.json();
-  renderNotes(notes);
+  fetchNotes(notes);
   modal.classList.toggle("hidden");
 
 };
@@ -127,7 +127,7 @@ const editNote = async (note, id) => {
     body: JSON.stringify(note)
   })
   const notes = await response.json();
-  renderNotes(notes);
+  fetchNotes(notes);
   modal.classList.toggle("hidden");
 };
 
@@ -138,7 +138,7 @@ const deleteNote = async (id) => {
       method: "DELETE",
     });
     const notes = await response.json();
-    renderNotes(notes);
+    fetchNotes(notes);
   
 } catch (error) {
     console.error(error);
